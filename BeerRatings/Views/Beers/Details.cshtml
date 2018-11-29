@@ -1,0 +1,49 @@
+﻿@model BeerRatings.Models.Beer
+
+@{
+    ViewData["Title"] = "Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>Beer</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Name)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Name)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Abv)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Abv)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Brewery)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Brewery.BreweryName)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Style)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Style.Style)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Notes)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Notes)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+</div>
