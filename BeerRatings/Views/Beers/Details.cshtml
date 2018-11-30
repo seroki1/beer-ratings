@@ -1,4 +1,4 @@
-﻿@model BeerRatings.Models.Beer
+﻿@model BeerRatings.ViewModel.BeerDetailsViewModel
 
 @{
     ViewData["Title"] = "Details";
@@ -41,9 +41,16 @@
         <dd>
             @Html.DisplayFor(model => model.Notes)
         </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.AverageRating)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.AverageRating)
+        </dd>
     </dl>
 </div>
 <div>
+    <a asp-action="Create" asp-controller="Ratings" asp-route-id="@Model.Id">Add Rating</a> |
     <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
     <a asp-action="Index">Back to List</a>
 </div>

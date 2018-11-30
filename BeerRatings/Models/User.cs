@@ -13,6 +13,7 @@ namespace BeerRatings.Models
         public int Id { get; set; }
         public string UserName { get; set; }
         public int RoleId { get; set; }
+        public string Email { get; set; }
 
         public UserRole Role { get; set; }
         public ICollection<Ratings> Ratings { get; set; }

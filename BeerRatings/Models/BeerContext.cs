@@ -111,6 +111,10 @@ namespace BeerRatings.Models
                     .IsRequired()
                     .HasMaxLength(100);
 
+                entity.Property(e => e.Email)
+                    .IsRequired()
+                    .HasMaxLength(100);
+
                 entity.HasOne(d => d.Role)
                     .WithMany(p => p.User)
                     .HasForeignKey(d => d.RoleId)

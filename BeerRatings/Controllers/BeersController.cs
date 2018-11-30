@@ -6,16 +6,21 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using BeerRatings.Models;
+using BeerRatings.Repository;
+using BeerRatings.ViewModel;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BeerRatings
 {
     public class BeersController : Controller
     {
         private readonly BeerContext _context;
+        private readonly ICommon _common;
 
-        public BeersController(BeerContext context)
+        public BeersController(BeerContext context, ICommon common)
         {
             _context = context;
+            _common = common;
         }
 
         // GET: Beers
@@ -33,10 +38,7 @@ namespace BeerRatings
                 return NotFound();
             }
 
-            var beer = await _context.Beer
-                .Include(b => b.Brewery)
-                .Include(b => b.Style)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var beer = _common.GetBeerDetailsViewModel(id);
             if (beer == null)
             {
                 return NotFound();
@@ -46,11 +48,15 @@ namespace BeerRatings
         }
 
         // GET: Beers/Create
+        [Authorize]
         public IActionResult Create()
         {
-            ViewData["BreweryId"] = new SelectList(_context.Brewery, "Id", "BreweryName");
-            ViewData["StyleId"] = new SelectList(_context.BeerStyle, "Id", "Style");
-            return View();
+            var model = new BeerViewModel
+            {
+                BreweryList = _common.GetBreweryChoices(),
+                StyleList = _common.GetStyleChoices()
+            };
+            return View(model);
         }
 
         // POST: Beers/Create
@@ -58,7 +64,8 @@ namespace BeerRatings
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,BreweryId,Abv,StyleId,Notes")] Beer beer)
+        [Authorize]
+        public async Task<IActionResult> Create([Bind("Name,BreweryId,Abv,StyleId,Notes")] BeerViewModel beer)
         {
             if (ModelState.IsValid)
             {
@@ -66,12 +73,13 @@ namespace BeerRatings
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["BreweryId"] = new SelectList(_context.Brewery, "Id", "BreweryName", beer.BreweryId);
-            ViewData["StyleId"] = new SelectList(_context.BeerStyle, "Id", "Style", beer.StyleId);
+            beer.BreweryList = _common.GetBreweryChoices();
+            beer.StyleList = _common.GetStyleChoices();
             return View(beer);
         }
 
         // GET: Beers/Edit/5
+        [Authorize]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -79,13 +87,12 @@ namespace BeerRatings
                 return NotFound();
             }
 
-            var beer = await _context.Beer.FindAsync(id);
+            var beer = _common.GetBeerViewModel(id);
             if (beer == null)
             {
                 return NotFound();
             }
-            ViewData["BreweryId"] = new SelectList(_context.Brewery, "Id", "BreweryName", beer.BreweryId);
-            ViewData["StyleId"] = new SelectList(_context.BeerStyle, "Id", "Style", beer.StyleId);
+
             return View(beer);
         }
 
@@ -94,7 +101,8 @@ namespace BeerRatings
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,BreweryId,Abv,StyleId,Notes")] Beer beer)
+        [Authorize]
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,BreweryId,Abv,StyleId,Notes")] BeerViewModel beer)
         {
             if (id != beer.Id)
             {
@@ -110,7 +118,7 @@ namespace BeerRatings
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!BeerExists(beer.Id))
+                    if (!_common.BeerExists(beer.Id))
                     {
                         return NotFound();
                     }
@@ -121,8 +129,8 @@ namespace BeerRatings
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["BreweryId"] = new SelectList(_context.Brewery, "Id", "BreweryName", beer.BreweryId);
-            ViewData["StyleId"] = new SelectList(_context.BeerStyle, "Id", "Style", beer.StyleId);
+            beer.BreweryList = _common.GetBreweryChoices();
+            beer.StyleList = _common.GetStyleChoices();
             return View(beer);
         }
 
@@ -157,9 +165,5 @@ namespace BeerRatings
             return RedirectToAction(nameof(Index));
         }
 
-        private bool BeerExists(int id)
-        {
-            return _context.Beer.Any(e => e.Id == id);
-        }
     }
 }

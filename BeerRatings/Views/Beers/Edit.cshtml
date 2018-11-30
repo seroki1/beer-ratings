@@ -1,4 +1,4 @@
-﻿@model BeerRatings.Models.Beer
+﻿@model BeerRatings.ViewModel.BeerViewModel
 
 @{
     ViewData["Title"] = "Edit";
@@ -21,7 +21,7 @@
             </div>
             <div class="form-group">
                 <label asp-for="BreweryId" class="control-label"></label>
-                <select asp-for="BreweryId" class="form-control" asp-items="ViewBag.BreweryId"></select>
+                <select asp-for="BreweryId" class="form-control" asp-items="Model.BreweryList"></select>
                 <span asp-validation-for="BreweryId" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -31,7 +31,7 @@
             </div>
             <div class="form-group">
                 <label asp-for="StyleId" class="control-label"></label>
-                <select asp-for="StyleId" class="form-control" asp-items="ViewBag.StyleId"></select>
+                <select asp-for="StyleId" class="form-control" asp-items="Model.StyleList"></select>
                 <span asp-validation-for="StyleId" class="text-danger"></span>
             </div>
             <div class="form-group">
